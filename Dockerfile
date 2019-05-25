@@ -40,3 +40,5 @@ RUN SYMFONY_ENV=prod composer update --prefer-dist --no-plugins --no-scripts --n
 FROM base AS release
 EXPOSE 9000
 USER www-data
+COPY --chown=www-data:www-data . .
+COPY --chown=www-data:www-data --from=dependencies /var/www/html/vendor /var/www/html/vendor

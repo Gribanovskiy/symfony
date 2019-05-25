@@ -1,0 +1,41 @@
+version: '3.2'
+
+services:
+    db:
+        image: mysql:5.7
+        ports:
+            - "${DB_PORT:-3306}:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: 4xxi-server
+        volumes:
+          - db:/var/lib/mysql
+    web:
+        image: test_php
+        build:
+            context: .
+        user: "1001:1001"
+        expose:
+            - '9000'
+        depends_on:
+            - db
+        volumes:
+            - ./:/var/www/html
+            - "./.babel.json:/var/www/.babel.json"
+        environment:
+            SYMFONY_ENV: dev
+
+    nginx:
+        image: 4xxi/nginx:latest
+        depends_on:
+            - web
+        ports:
+            - "${SERVER_HTTP_PORT:-80}:80"
+        environment:
+            WWW_DIR: /var/www/html
+            SYMFONY_ENV: dev
+        volumes:
+            - .:/var/www/html
+            - ./var/logs/nginx:/var/log/nginx
+volumes:
+    db:
