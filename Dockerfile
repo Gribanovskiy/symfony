@@ -42,3 +42,4 @@ EXPOSE 9000
 USER www-data
 COPY --chown=www-data:www-data . .
 COPY --chown=www-data:www-data --from=dependencies /var/www/html/vendor /var/www/html/vendor
+CMD ["php-fpm"]
