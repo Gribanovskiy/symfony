@@ -32,9 +32,10 @@ ENV SYMFONY_ENV prod
 # ---- Dependencies ----
 FROM base AS dependencies
 COPY composer.json .
+COPY composer.lock .
 
 # install vendors
-RUN SYMFONY_ENV=prod composer update --prefer-dist --no-plugins --no-scripts --no-dev --no-autoloader
+RUN SYMFONY_ENV=prod composer install --prefer-dist --no-plugins --no-scripts --no-dev --no-autoloader
 
 # ---- Release ----
 FROM base AS release
@@ -42,4 +43,7 @@ EXPOSE 9000
 USER www-data
 COPY --chown=www-data:www-data . .
 COPY --chown=www-data:www-data --from=dependencies /var/www/html/vendor /var/www/html/vendor
+RUN composer dump-autoload
+RUN php bin/console assets:install public
+RUN php bin/console c:c -e ${SYMFONY_ENV} && bin/console c:w -e ${SYMFONY_ENV}
 CMD ["php-fpm"]
