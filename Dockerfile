@@ -44,6 +44,5 @@ USER www-data
 COPY --chown=www-data:www-data . .
 COPY --chown=www-data:www-data --from=dependencies /var/www/html/vendor /var/www/html/vendor
 RUN composer dump-autoload
-RUN php bin/console assets:install web
-RUN php bin/console c:c -e ${SYMFONY_ENV} && bin/console c:w -e ${SYMFONY_ENV}
+RUN composer run-script post-install-cmd
 CMD ["php-fpm"]
